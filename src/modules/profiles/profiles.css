@@ -17,8 +17,15 @@
   font-size: 3rem;
   font-weight: 400;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 0.5rem;
   color: #f0f4ff;
+}
+
+.profile-selector__subtitle {
+  font-size: 1.1rem;
+  color: rgba(240, 244, 255, 0.6);
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .profile-selector__grid {
@@ -27,6 +34,13 @@
   gap: 2rem;
   max-width: 900px;
   margin: 0 auto;
+}
+
+.profile-card-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .profile-card {
@@ -92,6 +106,37 @@
 
 .profile-card--add:hover {
   border-color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-card__edit {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(79, 70, 229, 0.9);
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.profile-card-container:hover .profile-card__edit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.profile-card__edit:hover {
+  background: rgba(79, 70, 229, 1);
+  transform: scale(1.1);
 }
 
 /* Modal */
@@ -170,6 +215,17 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.modal__delete-btn {
+  background: rgba(248, 113, 113, 0.9) !important;
+  color: #fff !important;
+}
+
+.modal__delete-btn:hover {
+  background: rgba(248, 113, 113, 1) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(248, 113, 113, 0.4);
 }
 
 .modal__actions button:first-child {

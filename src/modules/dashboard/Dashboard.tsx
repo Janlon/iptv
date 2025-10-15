@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useAuth } from '../auth/AuthContext';
+import { useProfiles } from '../profiles/ProfileContext';
 import { fetchCategories, fetchSeries, fetchVodStreams } from '../iptv/api';
 import { MediaType, XtreamCategory, XtreamSeries, XtreamVod } from '../iptv/types';
 import { useRemoteNavigation, type RemoteKeyEvent } from '../navigation/useRemoteNavigation';
@@ -36,6 +37,8 @@ export function Dashboard() {
     state: { credentials },
     logout
   } = useAuth();
+
+  const { activeProfile, logoutProfile } = useProfiles();
 
   const [activeTab, setActiveTab] = useState<MediaType>('movie');
   const [selection, setSelection] = useState<SelectionState>(INITIAL_SELECTION);
@@ -344,9 +347,16 @@ export function Dashboard() {
       <header className="dashboard__header">
         <div className="dashboard__title-group">
           <h2>{TABS.find((tab) => tab.type === activeTab)?.label}</h2>
-          {credentials && (
-            <span className="dashboard__subtitle">{credentials.username}</span>
-          )}
+          <div className="dashboard__subtitle-group">
+            {activeProfile && (
+              <span className="dashboard__profile">
+                {activeProfile.avatar} {activeProfile.name}
+              </span>
+            )}
+            {credentials && (
+              <span className="dashboard__subtitle">{credentials.username}</span>
+            )}
+          </div>
         </div>
         <div className="dashboard__tabs" role="tablist">
           {TABS.map((tab, index) => (
@@ -368,6 +378,14 @@ export function Dashboard() {
             title="Buscar (Ctrl+K)"
           >
             🔍 Buscar
+          </button>
+          <button 
+            className="dashboard__profile-btn" 
+            type="button" 
+            onClick={logoutProfile}
+            title="Trocar de perfil"
+          >
+            👤 Trocar Perfil
           </button>
           <button className="dashboard__logout" type="button" onClick={handleLogout}>
             Sair

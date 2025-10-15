@@ -53,6 +53,7 @@ type ProfilesContextType = {
   updateWatchHistory: (item: Omit<WatchHistory, 'watchedAt'>) => void;
   getWatchHistory: () => WatchHistory[];
   clearProfile: () => void;
+  logoutProfile: () => void;
 };
 
 const ProfilesContext = createContext<ProfilesContextType | null>(null);
@@ -81,7 +82,7 @@ function loadState(): ProfilesState {
 
   return {
     profiles: [defaultProfile],
-    activeProfileId: defaultProfile.id,
+    activeProfileId: null, // Sempre inicia sem perfil ativo para mostrar seletor
     profileData: {
       [defaultProfile.id]: {
         favorites: [],
@@ -281,6 +282,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, activeProfileId: null }));
   }, []);
 
+  const logoutProfile = useCallback(() => {
+    setState((prev) => ({ ...prev, activeProfileId: null }));
+  }, []);
+
   return (
     <ProfilesContext.Provider
       value={{
@@ -296,7 +301,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         getFavorites,
         updateWatchHistory,
         getWatchHistory,
-        clearProfile
+        clearProfile,
+        logoutProfile
       }}
     >
       {children}

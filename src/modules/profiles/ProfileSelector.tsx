@@ -2,9 +2,10 @@ import { KeyboardEvent, MouseEvent, useState } from 'react';
 import { useProfiles, type Profile } from './ProfileContext';
 
 export function ProfileSelector() {
-  const { profiles, selectProfile, createProfile } = useProfiles();
+  const { profiles, selectProfile, createProfile, updateProfile, deleteProfile } = useProfiles();
   const [showPinModal, setShowPinModal] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState<Profile | null>(null);
   const [pin, setPin] = useState('');
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileAvatar, setNewProfileAvatar] = useState('🎬');
@@ -56,6 +57,47 @@ export function ProfileSelector() {
     setError('');
   }
 
+  function handleEditProfile() {
+    if (!showEditModal) return;
+
+    if (!newProfileName.trim()) {
+      setError('Digite um nome para o perfil');
+      return;
+    }
+
+    updateProfile(showEditModal.id, {
+      name: newProfileName,
+      avatar: newProfileAvatar,
+      pin: newProfilePin || undefined
+    });
+
+    setShowEditModal(null);
+    setNewProfileName('');
+    setNewProfileAvatar('🎬');
+    setNewProfilePin('');
+    setError('');
+  }
+
+  function openEditModal(profile: Profile) {
+    setShowEditModal(profile);
+    setNewProfileName(profile.name);
+    setNewProfileAvatar(profile.avatar);
+    setNewProfilePin(profile.pin || '');
+    setError('');
+  }
+
+  function handleDeleteProfile(profileId: string) {
+    if (profiles.length <= 1) {
+      setError('Deve haver pelo menos um perfil');
+      return;
+    }
+    
+    if (confirm('Tem certeza que deseja excluir este perfil?')) {
+      deleteProfile(profileId);
+      setShowEditModal(null);
+    }
+  }
+
   function handleKeyDown(event: KeyboardEvent, action: () => void) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -67,34 +109,52 @@ export function ProfileSelector() {
     <div className="profile-selector">
       <div className="profile-selector__container">
         <h1 className="profile-selector__title">Quem está assistindo?</h1>
+        <p className="profile-selector__subtitle">
+          {profiles.length} {profiles.length === 1 ? 'perfil criado' : 'perfis criados'} • 
+          Máximo {8 - profiles.length} {8 - profiles.length === 1 ? 'perfil restante' : 'perfis restantes'}
+        </p>
         
         <div className="profile-selector__grid">
           {profiles.map((profile) => (
-            <button
-              key={profile.id}
-              className="profile-card"
-              onClick={() => handleProfileClick(profile)}
-              onKeyDown={(e) => handleKeyDown(e, () => handleProfileClick(profile))}
-              type="button"
-            >
-              <div className="profile-card__avatar">{profile.avatar}</div>
-              <span className="profile-card__name">{profile.name}</span>
-              {profile.pin && <span className="profile-card__lock">🔒</span>}
-            </button>
+            <div key={profile.id} className="profile-card-container">
+              <button
+                className="profile-card"
+                onClick={() => handleProfileClick(profile)}
+                onKeyDown={(e) => handleKeyDown(e, () => handleProfileClick(profile))}
+                type="button"
+              >
+                <div className="profile-card__avatar">{profile.avatar}</div>
+                <span className="profile-card__name">{profile.name}</span>
+                {profile.pin && <span className="profile-card__lock">🔒</span>}
+              </button>
+              <button
+                className="profile-card__edit"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditModal(profile);
+                }}
+                title="Editar perfil"
+                type="button"
+              >
+                ⚙️
+              </button>
+            </div>
           ))}
 
           {profiles.length < 8 && (
-            <button
-              className="profile-card profile-card--add"
-              onClick={() => {
-                setShowCreateModal(true);
-                setError('');
-              }}
-              type="button"
-            >
-              <div className="profile-card__avatar profile-card__avatar--add">+</div>
-              <span className="profile-card__name">Adicionar Perfil</span>
-            </button>
+            <div className="profile-card-container">
+              <button
+                className="profile-card profile-card--add"
+                onClick={() => {
+                  setShowCreateModal(true);
+                  setError('');
+                }}
+                type="button"
+              >
+                <div className="profile-card__avatar profile-card__avatar--add">+</div>
+                <span className="profile-card__name">Adicionar Perfil</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -187,6 +247,79 @@ export function ProfileSelector() {
               </button>
               <button type="button" onClick={handleCreateProfile}>
                 Criar Perfil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Editar Perfil</h2>
+            
+            <label>
+              Nome
+              <input
+                type="text"
+                value={newProfileName}
+                onChange={(e) => setNewProfileName(e.target.value)}
+                placeholder="Ex: João, Maria..."
+                autoFocus
+                maxLength={20}
+              />
+            </label>
+
+            <label>
+              Avatar
+              <div className="avatar-picker">
+                {AVATARS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                    onClick={() => setNewProfileAvatar(emoji)}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </label>
+
+            <label>
+              PIN (opcional)
+              <input
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={newProfilePin}
+                onChange={(e) => setNewProfilePin(e.target.value)}
+                placeholder="Deixe vazio para não usar"
+                maxLength={10}
+              />
+            </label>
+
+            {error && <p className="modal__error">{error}</p>}
+
+            <div className="modal__actions">
+              <button 
+                type="button" 
+                onClick={() => handleDeleteProfile(showEditModal.id)}
+                className="modal__delete-btn"
+              >
+                Excluir
+              </button>
+              <button type="button" onClick={() => {
+                setShowEditModal(null);
+                setNewProfileName('');
+                setNewProfileAvatar('🎬');
+                setNewProfilePin('');
+                setError('');
+              }}>
+                Cancelar
+              </button>
+              <button type="button" onClick={handleEditProfile}>
+                Salvar
               </button>
             </div>
           </div>
