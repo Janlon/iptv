@@ -9,6 +9,7 @@ import { MediaGrid } from './MediaGrid';
 import { MediaDetails } from './MediaDetails';
 import { PlayerOverlay } from './PlayerOverlay';
 import { SeriesSelector } from './SeriesSelector';
+import { GlobalSearch } from '../search';
 import { useResponsiveColumns } from './useResponsiveColumns';
 import './player.css';
 import './series.css';
@@ -40,6 +41,7 @@ export function Dashboard() {
   const [selection, setSelection] = useState<SelectionState>(INITIAL_SELECTION);
   const [playingItem, setPlayingItem] = useState<(XtreamVod | XtreamSeries) | null>(null);
   const [selectedSeries, setSelectedSeries] = useState<XtreamSeries | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
   const [playingEpisode, setPlayingEpisode] = useState<{ 
     id: string; 
     title: string; 
@@ -281,6 +283,28 @@ export function Dashboard() {
     }
   }, [selectedSeries]);
 
+  const handleSearchItemSelect = useCallback((item: XtreamVod | XtreamSeries, type: MediaType) => {
+    setShowSearch(false);
+    if (type === 'series' && 'series_id' in item) {
+      setSelectedSeries(item);
+    } else {
+      setPlayingItem(item);
+    }
+  }, []);
+
+  // Global keyboard shortcut for search (Ctrl+K or Cmd+K)
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        setShowSearch(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
   useEffect(() => {
     if (!credentials || !categories.length) {
       return;
@@ -337,6 +361,14 @@ export function Dashboard() {
               {tab.label}
             </button>
           ))}
+          <button 
+            className="dashboard__search-btn" 
+            type="button" 
+            onClick={() => setShowSearch(true)}
+            title="Buscar (Ctrl+K)"
+          >
+            🔍 Buscar
+          </button>
           <button className="dashboard__logout" type="button" onClick={handleLogout}>
             Sair
           </button>
@@ -401,6 +433,14 @@ export function Dashboard() {
           credentials={credentials}
           onClose={() => setPlayingItem(null)}
           item={playingItem}
+        />
+      )}
+
+      {showSearch && credentials && (
+        <GlobalSearch
+          credentials={credentials}
+          onClose={() => setShowSearch(false)}
+          onItemSelect={handleSearchItemSelect}
         />
       )}
     </div>
