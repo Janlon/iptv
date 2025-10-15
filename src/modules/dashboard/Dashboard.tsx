@@ -18,8 +18,8 @@ import './player.css';
 import './series.css';
 
 const TABS: { label: string; type: MediaType }[] = [
-  { label: 'Filmes', type: 'movie' },
-  { label: 'Séries', type: 'series' }
+  { label: '🎬 Filmes', type: 'movie' },
+  { label: '📺 Séries', type: 'series' }
 ];
 
 type SelectionState = {

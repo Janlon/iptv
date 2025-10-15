@@ -95,7 +95,7 @@ export const MediaDetails = memo(function MediaDetails({ item, type, loading, on
         {details.rating && <span className="details__rating">Nota: {details.rating}</span>}
         {details.releasedAt && <span className="details__meta">Atualizado em {details.releasedAt}</span>}
         {details.description && <p>{details.description}</p>}
-        <span className="details__type">{type === 'movie' ? 'Filme' : 'Série'}</span>
+        <span className="details__type">{type === 'movie' ? '🎬 Filme' : '📺 Série'}</span>
         
         <div className="details__actions">
           {item && onPlay && (

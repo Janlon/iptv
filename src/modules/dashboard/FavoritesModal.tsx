@@ -64,7 +64,7 @@ export function FavoritesModal({ isOpen, onClose, onItemSelect }: FavoritesModal
           <div className="favorites-empty">
             <div className="favorites-empty__icon">⭐</div>
             <h3>Nenhum favorito ainda</h3>
-            <p>Adicione filmes e séries aos seus favoritos para encontrá-los facilmente aqui.</p>
+            <p>Adicione 🎬 filmes e 📺 séries aos seus favoritos para encontrá-los facilmente aqui.</p>
             <button className="btn btn--primary" onClick={onClose} type="button">
               Explorar Catálogo
             </button>
@@ -80,7 +80,7 @@ export function FavoritesModal({ isOpen, onClose, onItemSelect }: FavoritesModal
                 >
                   <option value="recent">Adicionados recentemente</option>
                   <option value="name">Nome (A-Z)</option>
-                  <option value="type">Tipo (Filmes/Séries)</option>
+                  <option value="type">Tipo (🎬 Filmes/📺 Séries)</option>
                 </select>
               </div>
               <div className="favorites-profile">

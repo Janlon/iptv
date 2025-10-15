@@ -142,7 +142,7 @@ export function GlobalSearch({ credentials, onClose, onItemSelect }: GlobalSearc
           <input
             type="text"
             className="global-search__input"
-            placeholder="Digite o nome do filme ou série..."
+            placeholder="Digite o nome do 🎬 filme ou 📺 série..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             autoFocus
@@ -154,9 +154,9 @@ export function GlobalSearch({ credentials, onClose, onItemSelect }: GlobalSearc
               value={filters.type}
               onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value as MediaType | 'all' }))}
             >
-              <option value="all">Todos os tipos</option>
-              <option value="movie">Filmes</option>
-              <option value="series">Séries</option>
+              <option value="all">📺🎬 Todos os tipos</option>
+              <option value="movie">🎬 Filmes</option>
+              <option value="series">📺 Séries</option>
             </select>
 
             <select
