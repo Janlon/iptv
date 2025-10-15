@@ -11,6 +11,7 @@ import { MediaDetails } from './MediaDetails';
 import { PlayerOverlay } from './PlayerOverlay';
 import { SeriesSelector } from './SeriesSelector';
 import { ManagementModal } from './ManagementModal';
+import { FavoritesModal } from './FavoritesModal';
 import { GlobalSearch } from '../search';
 import { useResponsiveColumns } from './useResponsiveColumns';
 import './player.css';
@@ -47,6 +48,7 @@ export function Dashboard() {
   const [selectedSeries, setSelectedSeries] = useState<XtreamSeries | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [playingEpisode, setPlayingEpisode] = useState<{ 
     id: string; 
     title: string; 
@@ -292,6 +294,23 @@ export function Dashboard() {
     }
   }, []);
 
+  const handleFavoriteItemSelect = useCallback((item: { streamId: string | number; title: string; type: 'movie' | 'series' }) => {
+    setShowFavorites(false);
+    
+    // Simula um objeto XtreamVod/XtreamSeries baseado no favorito
+    const mockItem = {
+      stream_id: item.streamId,
+      series_id: item.streamId,
+      name: item.title,
+    } as any;
+
+    if (item.type === 'series') {
+      setSelectedSeries(mockItem);
+    } else {
+      setPlayingItem(mockItem);
+    }
+  }, []);
+
   // Global keyboard shortcut for search (Ctrl+K or Cmd+K)
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
@@ -375,6 +394,14 @@ export function Dashboard() {
             title="Buscar (Ctrl+K)"
           >
             🔍 Buscar
+          </button>
+          <button 
+            className="dashboard__favorites-btn" 
+            type="button" 
+            onClick={() => setShowFavorites(true)}
+            title="Meus Favoritos"
+          >
+            ⭐ Favoritos
           </button>
           <button 
             className="dashboard__profile-btn" 
@@ -463,6 +490,12 @@ export function Dashboard() {
           onItemSelect={handleSearchItemSelect}
         />
       )}
+
+      <FavoritesModal
+        isOpen={showFavorites}
+        onClose={() => setShowFavorites(false)}
+        onItemSelect={handleFavoriteItemSelect}
+      />
 
       <ManagementModal
         isOpen={showManagement}

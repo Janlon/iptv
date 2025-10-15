@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import { useProfiles } from '../profiles/ProfileContext';
 import type { MediaType, XtreamSeries, XtreamVod } from '../iptv/types';
 
 type MediaDetailsProps = {
@@ -9,6 +10,8 @@ type MediaDetailsProps = {
 };
 
 export const MediaDetails = memo(function MediaDetails({ item, type, loading, onPlay }: MediaDetailsProps) {
+  const { isFavorite, addFavorite, removeFavorite } = useProfiles();
+  
   const details = useMemo(() => {
     if (!item) {
       return null;
@@ -32,6 +35,30 @@ export const MediaDetails = memo(function MediaDetails({ item, type, loading, on
       releasedAt: item.last_modified
     };
   }, [item]);
+
+  const handleFavoriteToggle = () => {
+    if (!item || !details) return;
+    
+    const streamId = 'stream_id' in item ? item.stream_id : item.series_id;
+    const isCurrentlyFavorite = isFavorite(streamId);
+    
+    if (isCurrentlyFavorite) {
+      removeFavorite(streamId);
+    } else {
+      addFavorite({
+        streamId,
+        title: details.title,
+        poster: details.poster,
+        type: type
+      });
+    }
+  };
+
+  const getFavoriteButtonText = () => {
+    if (!item) return '';
+    const streamId = 'stream_id' in item ? item.stream_id : item.series_id;
+    return isFavorite(streamId) ? '⭐ Remover dos Favoritos' : '☆ Adicionar aos Favoritos';
+  };
 
   if (loading && !details) {
     return (
@@ -69,12 +96,26 @@ export const MediaDetails = memo(function MediaDetails({ item, type, loading, on
         {details.releasedAt && <span className="details__meta">Atualizado em {details.releasedAt}</span>}
         {details.description && <p>{details.description}</p>}
         <span className="details__type">{type === 'movie' ? 'Filme' : 'Série'}</span>
-        {item && onPlay && (
-          <button className="details__play details__play--big" type="button" onClick={() => onPlay(item)}>
-            <span role="img" aria-label="play" style={{fontSize: '2rem', marginRight: '0.5rem'}}>▶️</span>
-            <span style={{fontSize: '1.25rem', fontWeight: 600}}>Assistir</span>
-          </button>
-        )}
+        
+        <div className="details__actions">
+          {item && onPlay && (
+            <button className="details__play details__play--big" type="button" onClick={() => onPlay(item)}>
+              <span role="img" aria-label="play" style={{fontSize: '2rem', marginRight: '0.5rem'}}>▶️</span>
+              <span style={{fontSize: '1.25rem', fontWeight: 600}}>Assistir</span>
+            </button>
+          )}
+          
+          {item && (
+            <button 
+              className="details__favorite" 
+              type="button" 
+              onClick={handleFavoriteToggle}
+              title={getFavoriteButtonText()}
+            >
+              {getFavoriteButtonText()}
+            </button>
+          )}
+        </div>
       </div>
     </aside>
   );
