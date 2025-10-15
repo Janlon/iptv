@@ -16,6 +16,7 @@ type AuthContextValue = {
   state: AuthState;
   setState: (state: AuthState) => void;
   logout: () => void;
+  updateCredentials: (credentials: AuthCredentials) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -30,6 +31,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState,
       logout: () => {
         setState({ status: 'idle' });
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem(STORAGE_KEY);
+        }
+      },
+      updateCredentials: (credentials: AuthCredentials) => {
+        setState({ status: 'authenticated', credentials });
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(credentials));
+        }
       }
     }),
     [state]

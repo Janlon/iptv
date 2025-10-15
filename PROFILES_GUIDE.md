@@ -1,4 +1,4 @@
-# Sistema de Perfis - Guia de Uso
+# Sistema de Perfis e Gerenciamento - Guia de Uso
 
 ## Funcionalidades Implementadas
 
@@ -17,6 +17,46 @@
 - **Editar perfil**: Ícone ⚙️ que aparece ao passar o mouse sobre o perfil
 - **Excluir perfil**: Opção disponível no modal de edição
 - **Trocar perfil**: Botão no header do dashboard
+
+### ✅ Central de Gerenciamento (NOVO!)
+- **Botão "⚙️ Gerenciar"** substitui o antigo botão "Sair"
+- Modal completo com abas organizadas para diferentes funções
+- Funcionalidades avançadas de limpeza e configuração
+
+## Central de Gerenciamento
+
+### 📋 Dados do Perfil
+**Limpeza de Favoritos**
+- Visualiza quantos favoritos estão salvos
+- Remove todos os favoritos com confirmação
+- Botão desabilitado se não houver favoritos
+
+**Limpeza de Histórico**
+- Mostra quantos itens estão no histórico
+- Remove todo o histórico de reprodução e posições salvas
+- Funciona apenas se houver histórico para limpar
+
+### 🔧 Conexão
+**Teste de Conectividade**
+- Mostra informações do servidor atual
+- Testa a conexão com o servidor IPTV
+- Exibe latência e status da conexão
+- Detecta problemas de timeout e conectividade
+
+### 👤 Conta
+**Visualização de Credenciais**
+- Mostra URL do servidor, usuário e senha (mascarada)
+- Modo de visualização seguro
+
+**Edição de Credenciais**
+- Permite alterar URL, usuário e senha
+- Validação de campos obrigatórios
+- Salva automaticamente no localStorage
+
+**Logout Seguro**
+- Confirmação antes de sair da conta
+- Limpa todos os dados de autenticação
+- Retorna para tela de login
 
 ## Como usar
 
@@ -42,6 +82,13 @@
 - No dashboard, clique em "👤 Trocar Perfil" no header
 - Você voltará para a tela de seleção de perfis
 
+### 5. Gerenciar dados e configurações
+- No dashboard, clique em "⚙️ Gerenciar" no header
+- Use as abas para navegar entre diferentes funcções:
+  - **Dados do Perfil**: Limpar favoritos e histórico
+  - **Conexão**: Testar conectividade do servidor
+  - **Conta**: Editar credenciais ou fazer logout
+
 ## Recursos visuais
 
 ### Interface da seleção de perfis
@@ -49,21 +96,43 @@
 - Avatars com emojis coloridos
 - Indicador de perfis protegidos por PIN (🔒)
 - Botão de configuração que aparece no hover
+- Contador de perfis criados/disponíveis
 
 ### Header do dashboard
 - Mostra o perfil ativo com avatar e nome
 - Informações do usuário logado
-- Botões de busca, trocar perfil e sair
+- Botões de busca, trocar perfil e gerenciar
 
-### Modais intuitivos
-- Modal de PIN para perfis protegidos
-- Modal de criação/edição com seletor de avatars
-- Validações e mensagens de erro claras
+### Central de Gerenciamento
+- Interface com abas para organização
+- Cards informativos para cada funcionalidade
+- Contadores em tempo real (favoritos, histórico)
+- Validações e confirmações de segurança
+- Feedback visual para ações executadas
+
+## Segurança e Dados
+
+### Armazenamento Local
+- Todos os dados são salvos no localStorage do navegador
+- Perfis e preferências persistem entre sessões
+- Credenciais são salvas de forma simples (não criptografadas)
+
+### Limpeza de Dados
+- Favoritos e histórico podem ser limpos independentemente
+- Confirmações antes de ações destrutivas
+- Contadores mostram quantos itens serão afetados
+
+### Teste de Conectividade
+- Verifica se o servidor IPTV está respondendo
+- Mede latência da conexão
+- Detecta problemas de timeout (10 segundos)
+- Valida resposta do servidor
 
 ## Limitações
 - Máximo de 8 perfis por conta
 - Deve haver pelo menos 1 perfil sempre
 - PINs são armazenados localmente (não criptografados)
+- Teste de conexão tem timeout de 10 segundos
 
 ## Dados salvos por perfil
 Cada perfil mantém seus próprios dados:

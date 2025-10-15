@@ -54,6 +54,8 @@ type ProfilesContextType = {
   getWatchHistory: () => WatchHistory[];
   clearProfile: () => void;
   logoutProfile: () => void;
+  clearFavorites: () => void;
+  clearWatchHistory: () => void;
 };
 
 const ProfilesContext = createContext<ProfilesContextType | null>(null);
@@ -286,6 +288,42 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, activeProfileId: null }));
   }, []);
 
+  const clearFavorites = useCallback(() => {
+    if (!state.activeProfileId) return;
+
+    setState((prev) => {
+      const currentData = prev.profileData[state.activeProfileId!] ?? { favorites: [], watchHistory: [] };
+      return {
+        ...prev,
+        profileData: {
+          ...prev.profileData,
+          [state.activeProfileId!]: {
+            ...currentData,
+            favorites: []
+          }
+        }
+      };
+    });
+  }, [state.activeProfileId]);
+
+  const clearWatchHistory = useCallback(() => {
+    if (!state.activeProfileId) return;
+
+    setState((prev) => {
+      const currentData = prev.profileData[state.activeProfileId!] ?? { favorites: [], watchHistory: [] };
+      return {
+        ...prev,
+        profileData: {
+          ...prev.profileData,
+          [state.activeProfileId!]: {
+            ...currentData,
+            watchHistory: []
+          }
+        }
+      };
+    });
+  }, [state.activeProfileId]);
+
   return (
     <ProfilesContext.Provider
       value={{
@@ -302,7 +340,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         updateWatchHistory,
         getWatchHistory,
         clearProfile,
-        logoutProfile
+        logoutProfile,
+        clearFavorites,
+        clearWatchHistory
       }}
     >
       {children}

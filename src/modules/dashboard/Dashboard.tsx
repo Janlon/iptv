@@ -10,6 +10,7 @@ import { MediaGrid } from './MediaGrid';
 import { MediaDetails } from './MediaDetails';
 import { PlayerOverlay } from './PlayerOverlay';
 import { SeriesSelector } from './SeriesSelector';
+import { ManagementModal } from './ManagementModal';
 import { GlobalSearch } from '../search';
 import { useResponsiveColumns } from './useResponsiveColumns';
 import './player.css';
@@ -45,6 +46,7 @@ export function Dashboard() {
   const [playingItem, setPlayingItem] = useState<(XtreamVod | XtreamSeries) | null>(null);
   const [selectedSeries, setSelectedSeries] = useState<XtreamSeries | null>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [showManagement, setShowManagement] = useState(false);
   const [playingEpisode, setPlayingEpisode] = useState<{ 
     id: string; 
     title: string; 
@@ -261,11 +263,6 @@ export function Dashboard() {
     [clampItemIndex]
   );
 
-  const handleLogout = useCallback(() => {
-    queryClient.clear();
-    logout();
-  }, [logout, queryClient]);
-
   const handlePlayItem = useCallback((item: XtreamVod | XtreamSeries) => {
     if (activeTab === 'series' && 'series_id' in item) {
       setSelectedSeries(item);
@@ -387,8 +384,13 @@ export function Dashboard() {
           >
             👤 Trocar Perfil
           </button>
-          <button className="dashboard__logout" type="button" onClick={handleLogout}>
-            Sair
+          <button 
+            className="dashboard__management" 
+            type="button" 
+            onClick={() => setShowManagement(true)}
+            title="Gerenciar conta e dados"
+          >
+            ⚙️ Gerenciar
           </button>
         </div>
       </header>
@@ -461,6 +463,11 @@ export function Dashboard() {
           onItemSelect={handleSearchItemSelect}
         />
       )}
+
+      <ManagementModal
+        isOpen={showManagement}
+        onClose={() => setShowManagement(false)}
+      />
     </div>
   );
 }
