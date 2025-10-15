@@ -1,0 +1,31 @@
+{
+  "name": "iptv-lg-webos",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "proxy": "node scripts/proxy-server.mjs",
+    "proxy:check": "node scripts/proxy-server.mjs --check"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.51.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "jsdom": "^24.0.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vitest": "^1.6.0"
+  }
+}
