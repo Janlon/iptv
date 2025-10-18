@@ -52,8 +52,23 @@
 :root {
   font-family: 'LG Smart', 'Segoe UI', sans-serif;
   color-scheme: dark;
-  background-color: #080b12;
-  color: #f0f4ff;
+  background-color: #000000; /* Fundo completamente preto para modo cinema */
+  color: #ffffff;
+}
+
+/* Modo Cinema - Fundo escuro total */
+body.cinema-mode {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+body.cinema-mode * {
+  --background-primary: #000000;
+  --background-secondary: #0a0a0a;
+  --background-card: #111111;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-color: #ff6b35;
 }
 
 * {
@@ -63,11 +78,12 @@
 }
 
 body {
-  background-color: #080b12;
+  background-color: #000000; /* Preto total para experiência cinema */
   min-height: 100vh;
   display: flex;
   align-items: stretch;
   justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
 #root {
@@ -275,6 +291,35 @@ body {
   border-color: rgba(251, 191, 36, 0.5);
   transform: translateY(-1px);
   outline: none;
+}
+
+/* Botão Modo Cinema */
+.dashboard__cinema-btn {
+  margin-left: 1rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard__cinema-btn:hover,
+.dashboard__cinema-btn:focus-visible {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3));
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.dashboard__cinema-btn--active {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.4)) !important;
+  border-color: rgba(239, 68, 68, 0.8) !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+  color: #ffffff !important;
 }
 
 .dashboard__profile-btn {
@@ -607,4 +652,112 @@ body {
     grid-column: 1 / -1;
     flex-direction: row;
   }
+}
+
+/* ====== MODO CINEMA ====== */
+.cinema-mode {
+  background-color: #000000 !important;
+}
+
+.cinema-mode .dashboard {
+  background-color: #000000 !important;
+}
+
+.cinema-mode .dashboard__header {
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cinema-mode .categories {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cinema-mode .categories__item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.cinema-mode .categories__item--active {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  color: #ffffff !important;
+}
+
+.cinema-mode .grid {
+  background: transparent !important;
+}
+
+.cinema-mode .card {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cinema-mode .card--focused {
+  border-color: rgba(239, 68, 68, 0.7) !important;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.3) !important;
+}
+
+.cinema-mode .details {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cinema-mode .details__title {
+  color: #ffffff !important;
+}
+
+.cinema-mode .details__meta {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.cinema-mode .details__description {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.cinema-mode .details__play {
+  background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.cinema-mode .details__play:hover {
+  background: linear-gradient(90deg, #dc2626, #b91c1c) !important;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+}
+
+.cinema-mode .details__favorite {
+  background: rgba(251, 191, 36, 0.1) !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+/* Efeito de tela de cinema */
+.cinema-mode::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.3) 100%),
+    linear-gradient(90deg, rgba(0,0,0,0.2) 0%, transparent 3%, transparent 97%, rgba(0,0,0,0.2) 100%);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Escurecimento de bordas para efeito cinema */
+.cinema-mode .dashboard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+  pointer-events: none;
+  z-index: 1;
 }

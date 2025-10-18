@@ -250,26 +250,50 @@
 
 /* Avatar Picker */
 .avatar-picker {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   padding: 0.5rem;
   background: rgba(18, 24, 38, 0.4);
   border-radius: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.avatar-category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.avatar-category__title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(240, 244, 255, 0.8);
+  padding: 0 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.25rem;
+}
+
+.avatar-category__items {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.25rem;
 }
 
 .avatar-picker__item {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   border: 2px solid transparent;
   background: rgba(255, 255, 255, 0.05);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .avatar-picker__item:hover {

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Player - Debug</title>
+    <script src="$WEBAPIS/webapis/webapis.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .status {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .debug {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            max-width: 400px;
+        }
+        
+        .button {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .button:hover, .button:focus {
+            background: #45a049;
+            outline: 2px solid white;
+        }
+        
+        .loading {
+            margin-top: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📺 IPTV Player</div>
+        <div class="status" id="status">Inicializando Samsung TV App...</div>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Carregando aplicação completa...</p>
+        </div>
+        
+        <button class="button" onclick="loadFullApp()">▶ Carregar App Completo</button>
+        <button class="button" onclick="testProxy()">🔍 Testar Proxy</button>
+        <button class="button" onclick="checkAllAssets()">📁 Verificar Assets</button>
+        <button class="button" onclick="checkReactState()">⚛️ Estado React</button>
+        <button class="button" onclick="loadReactDirect()">🔧 Carregamento Direto</button>
+    </div>
+    
+    <div class="debug" id="debug">
+        <strong>Debug Info:</strong><br>
+        <div id="debug-content">Coletando informações...</div>
+    </div>
+
+    <script>
+        console.log('=== IPTV PLAYER DEBUG MODE ===');
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log('Status:', message);
+        }
+        
+        function updateDebug(info) {
+            const debugContent = document.getElementById('debug-content');
+            debugContent.innerHTML = info;
+        }
+        
+        function collectDebugInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Tizen': !!window.tizen,
+                'WebAPIs': !!window.webapis,
+                'Location': window.location.href,
+                'Base URI': document.baseURI,
+                'Screen': `${screen.width}x${screen.height}`,
+                'Document Ready': document.readyState,
+                'Timestamp': new Date().toLocaleString()
+            };
+            
+            // Verificar assets disponíveis
+            const assetsInfo = checkAssets();
+            
+            let debugText = '';
+            for (const [key, value] of Object.entries(info)) {
+                debugText += `${key}: ${value}<br>`;
+            }
+            
+            debugText += '<br><strong>Assets Check:</strong><br>';
+            debugText += assetsInfo;
+            
+            // Verificar se temos os arquivos corretos
+            debugText += '<br><strong>Expected Files:</strong><br>';
+            debugText += 'assets/index-CncAjdaT.js (atual)<br>';
+            debugText += 'config.js<br>';
+            debugText += 'index.html<br>';
+            
+            updateDebug(debugText);
+            return info;
+        }
+        
+        function checkAssets() {
+            const assets = [
+                'assets/index-9ZWX3ZTt.js',
+                'assets/index-as21rSUs.js', 
+                'assets/index-n6uE-Pgp.css',
+                'assets/index-C46USG4v.css',
+                'config.js'
+            ];
+            
+            let assetsInfo = '';
+            assets.forEach(asset => {
+                fetch(asset, {method: 'HEAD'})
+                    .then(response => {
+                        const status = response.ok ? '✅' : '❌';
+                        assetsInfo += `${status} ${asset}: ${response.status}<br>`;
+                        updateDebug(document.getElementById('debug-content').innerHTML + 
+                                  `${status} ${asset}: ${response.status}<br>`);
+                    })
+                    .catch(error => {
+                        assetsInfo += `❌ ${asset}: ERROR<br>`;
+                        updateDebug(document.getElementById('debug-content').innerHTML + 
+                                  `❌ ${asset}: ERROR<br>`);
+                        console.error('Asset check error:', asset, error);
+                    });
+            });
+            
+            return 'Checking assets...<br>';
+        }
+        
+        function testProxy() {
+            updateStatus('Testando conexão com proxy...');
+            
+            fetch('http://localhost:8787/status')
+                .then(response => response.text())
+                .then(data => {
+                    updateStatus('✅ Proxy conectado! Dados: ' + data.substring(0, 50));
+                })
+                .catch(error => {
+                    updateStatus('❌ Erro ao conectar proxy: ' + error.message);
+                    console.error('Proxy error:', error);
+                });
+        }
+        
+        function loadFullApp() {
+            updateStatus('Carregando aplicação React...');
+            console.log('=== STARTING REACT APP LOAD ===');
+            
+            // Primeiro criar o elemento root se não existir
+            let rootElement = document.getElementById('root');
+            if (!rootElement) {
+                console.log('Criando elemento root...');
+                rootElement = document.createElement('div');
+                rootElement.id = 'root';
+                rootElement.style.cssText = 'width: 100vw; height: 100vh;';
+                document.body.appendChild(rootElement);
+                console.log('Root element criado');
+            }
+            
+            // Verificar se os assets existem primeiro
+            const jsAssets = ['assets/index-CncAjdaT.js', 'assets/index-9ZWX3ZTt.js', 'assets/index-as21rSUs.js'];
+            const cssAssets = ['assets/index-n6uE-Pgp.css', 'assets/index-C46USG4v.css'];
+            
+            let jsToLoad = null;
+            let cssToLoad = null;
+            
+            // Detectar qual arquivo JS existe - procurar o arquivo correto primeiro
+            const correctJS = 'assets/index-CncAjdaT.js';
+            fetch(correctJS, {method: 'HEAD'})
+                .then(response => {
+                    if (response.ok) {
+                        console.log('JS correto encontrado:', correctJS);
+                        loadJS(correctJS);
+                    } else {
+                        // Fallback para outros arquivos
+                        jsAssets.forEach(js => {
+                            fetch(js, {method: 'HEAD'})
+                                .then(response => {
+                                    if (response.ok && !jsToLoad) {
+                                        jsToLoad = js;
+                                        console.log('JS encontrado:', js);
+                                        loadJS(js);
+                                    }
+                                })
+                                .catch(error => console.log('JS não encontrado:', js));
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.log('JS correto não encontrado, tentando outros...');
+                    jsAssets.forEach(js => {
+                        fetch(js, {method: 'HEAD'})
+                            .then(response => {
+                                if (response.ok && !jsToLoad) {
+                                    jsToLoad = js;
+                                    console.log('JS encontrado:', js);
+                                    loadJS(js);
+                                }
+                            })
+                            .catch(error => console.log('JS não encontrado:', js));
+                    });
+                });
+            
+            // Detectar qual arquivo CSS existe  
+            cssAssets.forEach(css => {
+                fetch(css, {method: 'HEAD'})
+                    .then(response => {
+                        if (response.ok && !cssToLoad) {
+                            cssToLoad = css;
+                            console.log('CSS encontrado:', css);
+                            loadCSS(css);
+                        }
+                    })
+                    .catch(error => console.log('CSS não encontrado:', css));
+            });
+            
+            function loadJS(jsFile) {
+                console.log('Carregando JS:', jsFile);
+                const script = document.createElement('script');
+                // Remover type="module" para compatibilidade Tizen
+                // script.type = 'module';
+                script.type = 'text/javascript';
+                script.crossOrigin = 'anonymous';
+                script.src = jsFile;
+                
+                console.log('Script attributes:', {
+                    src: script.src,
+                    type: script.type,
+                    crossOrigin: script.crossOrigin
+                });
+                
+                script.onload = function() {
+                    updateStatus('✅ Script JS carregado! Verificando React...');
+                    console.log('Script loaded successfully:', jsFile);
+                    
+                    // Verificar imediatamente se React está disponível
+                    setTimeout(() => {
+                        if (typeof React !== 'undefined') {
+                            console.log('✅ React detectado após carregamento!');
+                            updateStatus('✅ React detectado! Inicializando...');
+                        } else {
+                            console.log('❌ React ainda não detectado após carregamento');
+                            updateStatus('⚠️ Script carregado mas React não detectado');
+                        }
+                    }, 500);
+                    
+                    // Verificar se React foi realmente carregado
+                    setTimeout(() => {
+                        const reactRoot = document.getElementById('root');
+                        if (!reactRoot) {
+                            console.log('Criando div root para React');
+                            const newRoot = document.createElement('div');
+                            newRoot.id = 'root';
+                            newRoot.style.cssText = 'width: 100vw; height: 100vh;';
+                            document.body.appendChild(newRoot);
+                        }
+                        
+                        // Verificar se React renderizou algum conteúdo
+                        setTimeout(() => {
+                            const rootContent = document.getElementById('root');
+                            if (rootContent && rootContent.innerHTML.trim()) {
+                                console.log('✅ React renderizou conteúdo:', rootContent.innerHTML.substring(0, 100));
+                                updateStatus('✅ React App rodando!');
+                            } else {
+                                console.log('❌ React não renderizou conteúdo');
+                                updateStatus('⚠️ React carregado mas não renderizou');
+                                
+                                // Tentar verificar erros globais
+                                if (window.React) {
+                                    console.log('✅ React library loaded');
+                                } else {
+                                    console.log('❌ React library not found');
+                                }
+                            }
+                        }, 3000);
+                        
+                        console.log('React app should be initializing...');
+                        updateStatus('✅ App React inicializado');
+                    }, 2000);
+                };
+                
+                script.onerror = function(error) {
+                    updateStatus('❌ Erro ao carregar React app: ' + jsFile);
+                    console.error('Failed to load React script:', jsFile, error);
+                };
+                
+                document.head.appendChild(script);
+            }
+            
+            function loadCSS(cssFile) {
+                console.log('Carregando CSS:', cssFile);
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.crossOrigin = 'anonymous';
+                link.href = cssFile;
+                
+                link.onload = function() {
+                    console.log('CSS loaded successfully:', cssFile);
+                };
+                
+                link.onerror = function(error) {
+                    console.error('Failed to load CSS:', cssFile, error);
+                };
+                
+                document.head.appendChild(link);
+            }
+            
+            // Timeout de segurança
+            setTimeout(() => {
+                if (!jsToLoad) {
+                    updateStatus('❌ Nenhum arquivo JS encontrado nos assets!');
+                    console.error('No JS assets found!');
+                }
+            }, 3000);
+        }
+        
+        function loadReactDirect() {
+            updateStatus('Tentativa de carregamento direto...');
+            console.log('=== TRYING DIRECT LOAD ===');
+            
+            // Tentar carregar via fetch e eval (método alternativo)
+            const jsFile = 'assets/index-CncAjdaT.js';
+            
+            fetch(jsFile)
+                .then(response => response.text())
+                .then(jsCode => {
+                    console.log('JS fetched, length:', jsCode.length);
+                    updateStatus('📦 Código JS baixado, executando...');
+                    
+                    try {
+                        // Criar script inline
+                        const script = document.createElement('script');
+                        script.textContent = jsCode;
+                        document.head.appendChild(script);
+                        
+                        console.log('Script inline executado');
+                        updateStatus('✅ Script executado via fetch');
+                        
+                        setTimeout(() => {
+                            checkReactState();
+                        }, 1000);
+                        
+                    } catch (error) {
+                        console.error('Erro ao executar JS:', error);
+                        updateStatus('❌ Erro ao executar JS: ' + error.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao baixar JS:', error);
+                    updateStatus('❌ Erro ao baixar JS: ' + error.message);
+                });
+        }
+        
+        function checkAllAssets() {
+            updateStatus('Verificando todos os assets...');
+            console.log('=== CHECKING ALL ASSETS ===');
+            
+            const allAssets = [
+                'assets/index-CncAjdaT.js',
+                'assets/index-9ZWX3ZTt.js',
+                'assets/index-as21rSUs.js',
+                'assets/index-n6uE-Pgp.css', 
+                'assets/index-C46USG4v.css',
+                'config.js',
+                'index.html'
+            ];
+            
+            let results = '<strong>Assets Status:</strong><br>';
+            let checkedCount = 0;
+            
+            allAssets.forEach(asset => {
+                fetch(asset, {method: 'HEAD'})
+                    .then(response => {
+                        checkedCount++;
+                        const status = response.ok ? '✅' : '❌';
+                        const size = response.headers.get('content-length');
+                        results += `${status} ${asset} (${response.status}) ${size ? size + ' bytes' : ''}<br>`;
+                        
+                        if (checkedCount === allAssets.length) {
+                            updateDebug(results);
+                            updateStatus(`Verificação completa: ${checkedCount} assets verificados`);
+                        }
+                        
+                        console.log('Asset check:', asset, response.status, size);
+                    })
+                    .catch(error => {
+                        checkedCount++;
+                        results += `❌ ${asset}: ERRO - ${error.message}<br>`;
+                        
+                        if (checkedCount === allAssets.length) {
+                            updateDebug(results);
+                            updateStatus(`Verificação completa: ${checkedCount} assets verificados`);
+                        }
+                        
+                        console.error('Asset error:', asset, error);
+                    });
+            });
+        }
+        
+        function checkReactState() {
+            updateStatus('Verificando estado do React...');
+            console.log('=== CHECKING REACT STATE ===');
+            
+            let reactInfo = '<strong>React State:</strong><br>';
+            
+            // Verificar se React está disponível
+            if (typeof React !== 'undefined') {
+                reactInfo += '✅ React library: Disponível<br>';
+                reactInfo += `📦 React version: ${React.version || 'Desconhecida'}<br>`;
+            } else {
+                reactInfo += '❌ React library: Não encontrada<br>';
+            }
+            
+            // Verificar ReactDOM
+            if (typeof ReactDOM !== 'undefined') {
+                reactInfo += '✅ ReactDOM: Disponível<br>';
+            } else {
+                reactInfo += '❌ ReactDOM: Não encontrado<br>';
+            }
+            
+            // Verificar elemento root
+            const rootElement = document.getElementById('root');
+            if (rootElement) {
+                reactInfo += '✅ Root element: Encontrado<br>';
+                reactInfo += `📏 Root size: ${rootElement.offsetWidth}x${rootElement.offsetHeight}<br>`;
+                reactInfo += `📝 Root content: ${rootElement.innerHTML ? rootElement.innerHTML.substring(0, 100) + '...' : 'Vazio'}<br>`;
+                
+                const childCount = rootElement.children.length;
+                reactInfo += `👶 Children: ${childCount}<br>`;
+            } else {
+                reactInfo += '❌ Root element: Não encontrado<br>';
+            }
+            
+            // Verificar scripts carregados
+            const scripts = document.querySelectorAll('script[src*="assets"]');
+            reactInfo += `📜 Scripts carregados: ${scripts.length}<br>`;
+            
+            // Verificar CSS carregado
+            const cssLinks = document.querySelectorAll('link[href*="assets"]');
+            reactInfo += `🎨 CSS carregados: ${cssLinks.length}<br>`;
+            
+            // Verificar erros no console (se houver)
+            reactInfo += `🕐 Timestamp: ${new Date().toLocaleTimeString()}<br>`;
+            
+            updateDebug(reactInfo);
+            console.log('React state check completed');
+        }
+        
+        // Capturar erros JavaScript globais
+        window.addEventListener('error', function(event) {
+            console.error('🚨 JavaScript Error:', event.error);
+            console.error('📍 File:', event.filename, 'Line:', event.lineno);
+            updateStatus('❌ Erro JS: ' + (event.error ? event.error.message : 'Erro desconhecido'));
+            
+            const debugContent = document.getElementById('debug-content');
+            debugContent.innerHTML += `<br><span style="color: red;">❌ JS Error: ${event.error ? event.error.message : 'Unknown'}</span>`;
+        });
+        
+        // Capturar erros de Promise rejeitadas
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('🚨 Unhandled Promise Rejection:', event.reason);
+            updateStatus('❌ Promise rejeitada: ' + event.reason);
+            
+            const debugContent = document.getElementById('debug-content');
+            debugContent.innerHTML += `<br><span style="color: orange;">⚠️ Promise Error: ${event.reason}</span>`;
+        });
+        
+        // Inicialização
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, starting debug mode');
+            
+            updateStatus('Samsung TV emulador detectado');
+            collectDebugInfo();
+            
+            // Auto-teste do proxy após 2 segundos
+            setTimeout(testProxy, 2000);
+            
+            // Tizen specific initialization
+            if (window.tizen) {
+                console.log('Tizen APIs available');
+                updateStatus('✅ Tizen APIs disponíveis');
+            } else {
+                console.log('Tizen APIs not available, but app can still work');
+                updateStatus('⚠️ Tizen APIs não disponíveis (normal no debug)');
+            }
+        });
+        
+        // Keyboard navigation for TV
+        document.addEventListener('keydown', function(e) {
+            console.log('Key pressed:', e.keyCode, e.key);
+            
+            switch(e.keyCode) {
+                case 13: // Enter
+                    const focused = document.activeElement;
+                    if (focused && focused.click) {
+                        focused.click();
+                    }
+                    break;
+                case 27: // Escape
+                    updateStatus('Escape pressionado - voltando...');
+                    break;
+            }
+        });
+        
+        console.log('Debug mode initialized');
+    </script>
+</body>
+</html>

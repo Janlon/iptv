@@ -62,7 +62,7 @@ export function LoginScreen() {
   return (
     <div className="login-screen">
       <div className="login-box">
-        <h1>IPTV - LG webOS</h1>
+        <h1>GatoFlix</h1>
         <form onSubmit={handleSubmit}>
           <label>
             URL do servidor

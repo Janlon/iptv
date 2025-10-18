@@ -49,6 +49,7 @@ export function Dashboard() {
   const [showSearch, setShowSearch] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [cinemaMode, setCinemaMode] = useState(false);
   const [playingEpisode, setPlayingEpisode] = useState<{ 
     id: string; 
     title: string; 
@@ -100,11 +101,63 @@ export function Dashboard() {
   useRemoteNavigation(
     useCallback(
       ({ key }: RemoteKeyEvent) => {
-        setSelection((prev: SelectionState) => {
-          if (key === 'back') {
-            return { ...INITIAL_SELECTION, focusedPanel: 'tabs' };
+        console.log(`🎮 Dashboard - Tecla recebida: ${key}`);
+        
+        // Teclas globais (não dependem do estado de seleção)
+        if (key === 'back') {
+          if (playingItem || selectedSeries || playingEpisode) {
+            // Fechar player/série
+            setPlayingItem(null);
+            setSelectedSeries(null);
+            setPlayingEpisode(null);
+            return;
+          } else if (showSearch) {
+            setShowSearch(false);
+            return;
+          } else if (showManagement) {
+            setShowManagement(false);
+            return;
+          } else if (showFavorites) {
+            setShowFavorites(false);
+            return;
+          } else {
+            // Logout do perfil
+            logoutProfile();
+            return;
           }
+        }
+        
+        // Teclas de atalho coloridas
+        if (key === 'red') {
+          console.log('🔴 Botão vermelho - Alternando modo cinema');
+          setCinemaMode(!cinemaMode);
+          return;
+        }
+        
+        if (key === 'green') {
+          console.log('🟢 Botão verde - Abrindo busca');
+          setShowSearch(true);
+          return;
+        }
+        
+        if (key === 'yellow') {
+          console.log('🟡 Botão amarelo - Abrindo favoritos');
+          setShowFavorites(true);
+          return;
+        }
+        
+        if (key === 'blue') {
+          console.log('🔵 Botão azul - Abrindo gerenciamento');
+          setShowManagement(true);
+          return;
+        }
+        
+        // Se algum modal está aberto, não processar navegação
+        if (showSearch || showManagement || showFavorites || playingItem || selectedSeries || playingEpisode) {
+          return;
+        }
 
+        setSelection((prev: SelectionState) => {
           if (key === 'left') {
             if (prev.focusedPanel === 'grid') {
               if (prev.itemIndex % columns === 0) {
@@ -192,7 +245,7 @@ export function Dashboard() {
           return prev;
         });
       },
-      [categories.length, columns, items.length, focusedItem, activeTab]
+      [categories.length, columns, items.length, focusedItem, activeTab, cinemaMode, showSearch, showManagement, showFavorites, playingItem, selectedSeries, playingEpisode, logoutProfile]
     )
   );
 
@@ -348,6 +401,55 @@ export function Dashboard() {
     });
   }, [activeTab, categories, credentials, queryClient]);
 
+  // Aplicar modo cinema ao body
+  useEffect(() => {
+    if (cinemaMode) {
+      document.body.classList.add('cinema-mode');
+    } else {
+      document.body.classList.remove('cinema-mode');
+    }
+    
+    // Cleanup na desmontagem
+    return () => {
+      document.body.classList.remove('cinema-mode');
+    };
+  }, [cinemaMode]);
+
+  // Inicializar controle remoto Samsung TV
+  useEffect(() => {
+    console.log('🎮 Dashboard - Inicializando controle remoto Samsung TV...');
+    
+    // Verificar se é Samsung TV
+    if (typeof window !== 'undefined' && (window as any).tizen) {
+      try {
+        console.log('📱 Samsung TV detectada, registrando teclas...');
+        const tizen = (window as any).tizen;
+        
+        // Registrar teclas especiais do Samsung TV
+        const keys = [
+          'ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue',
+          'MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop',
+          'MediaRewind', 'MediaFastForward'
+        ];
+        
+        keys.forEach(key => {
+          try {
+            tizen.tvinputdevice.registerKey(key);
+            console.log(`✅ Tecla Samsung registrada: ${key}`);
+          } catch (error) {
+            console.log(`⚠️ Não foi possível registrar: ${key}`, error);
+          }
+        });
+        
+        console.log('🎮 Teclas Samsung TV registradas com sucesso');
+      } catch (error) {
+        console.log('⚠️ Erro ao registrar teclas Samsung TV:', error);
+      }
+    } else {
+      console.log('🖥️ Não é Samsung TV, usando controles padrão');
+    }
+  }, []);
+
   useEffect(() => {
     if (!credentials) {
       return;
@@ -402,6 +504,14 @@ export function Dashboard() {
             title="Meus Favoritos"
           >
             ⭐ Favoritos
+          </button>
+          <button 
+            className={`dashboard__cinema-btn ${cinemaMode ? 'dashboard__cinema-btn--active' : ''}`}
+            type="button" 
+            onClick={() => setCinemaMode(!cinemaMode)}
+            title={cinemaMode ? "Sair do Modo Cinema" : "Ativar Modo Cinema"}
+          >
+            🎬 {cinemaMode ? 'Cinema ON' : 'Cinema'}
           </button>
           <button 
             className="dashboard__profile-btn" 

@@ -1,15 +1,26 @@
 {
-  "name": "iptv-lg-webos",
+  "name": "gatoflix-lg-webos",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:samsung": "npm run build && node scripts/update-samsung-tv.mjs",
+    "build:lg": "node lgwebos/build-lg-simple.mjs",
     "preview": "vite preview",
     "test": "vitest",
     "proxy": "node scripts/proxy-server.mjs",
-    "proxy:check": "node scripts/proxy-server.mjs --check"
+    "proxy:check": "node scripts/proxy-server.mjs --check",
+    "samsung:update": "node scripts/update-samsung-tv.mjs",
+    "lg:build": "node lgwebos/build-lg-simple.mjs",
+    "lg:package": "cd lgwebos && ares-package dist/",
+    "lg:install": "node lgwebos/install-lg.mjs install",
+    "lg:debug": "node lgwebos/install-lg.mjs debug",
+    "lg:launch": "node lgwebos/install-lg.mjs launch",
+    "lg:setup": "node lgwebos/install-lg.mjs setup",
+    "lg:full": "node lgwebos/install-lg.mjs full",
+    "lg:clean": "rm -rf lgwebos/dist lgwebos/*.ipk"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.7",
@@ -22,8 +33,9 @@
     "@testing-library/user-event": "^14.5.1",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
-    "jsdom": "^24.0.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
+    "jsdom": "^24.0.0",
+    "terser": "^5.44.0",
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
     "vitest": "^1.6.0"

@@ -1,0 +1,365 @@
+/* LG webOS Specific Styles */
+
+/* Base styles for LG TVs */
+body.lg-webos {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'LG Smart UI', 'Segoe UI', sans-serif;
+}
+
+/* LG Magic Remote cursor */
+.magic-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #00ff00 0%, #007700 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transition: all 0.1s ease;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+}
+
+/* Focus styles específicos para LG */
+.lg-focus {
+    outline: 3px solid #00ff00 !important;
+    outline-offset: 3px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+/* Botões coloridos LG webOS */
+.lg-color-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.lg-color-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lg-color-btn:focus {
+    transform: scale(1.2);
+    outline: 3px solid white;
+    outline-offset: 3px;
+}
+
+.lg-red { background: #ff4444; }
+.lg-green { background: #44ff44; }
+.lg-yellow { background: #ffff44; color: #333; }
+.lg-blue { background: #4444ff; }
+
+/* Responsive grid para diferentes tamanhos de TV LG */
+@media screen and (max-width: 1366px) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+}
+
+@media screen and (min-width: 1920px) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media screen and (min-width: 2560px) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+    }
+}
+
+/* Otimizações de performance para LG webOS */
+.hardware-accelerated {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Scrolling otimizado para Magic Remote */
+.lg-scrollable {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.lg-scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.lg-scrollable::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.lg-scrollable::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.lg-scrollable::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Navegação por gestos LG Magic Remote */
+.gesture-zone {
+    position: relative;
+    cursor: pointer;
+}
+
+.gesture-zone::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 2px dashed transparent;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.gesture-zone:hover::after {
+    border-color: rgba(0, 255, 0, 0.5);
+}
+
+/* Indicadores de navegação LG */
+.lg-nav-indicator {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    z-index: 1000;
+    display: none;
+}
+
+.lg-nav-indicator.active {
+    display: block;
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Loading específico para LG webOS */
+.lg-loading {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white;
+}
+
+.lg-loading .loading-title {
+    font-family: 'LG Smart UI', sans-serif;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Performance otimizada para rendering */
+.lg-optimized {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+}
+
+/* Cinema mode específico para LG OLED */
+.lg-cinema-mode {
+    background: #000000 !important;
+    filter: contrast(1.1) brightness(0.95);
+}
+
+.lg-cinema-mode .media-grid {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.lg-cinema-mode .media-item {
+    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+}
+
+/* Audio feedback visual para LG */
+.lg-audio-feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lg-audio-feedback.show {
+    opacity: 1;
+}
+
+/* Accessibility para LG webOS */
+.lg-high-contrast {
+    filter: contrast(1.5) brightness(1.2);
+}
+
+.lg-large-text {
+    font-size: 120% !important;
+}
+
+/* Thermal throttling prevention */
+.lg-thermal-safe {
+    will-change: auto;
+    transform: none;
+    transition: none;
+}
+
+/* Memory efficient animations */
+.lg-efficient-animation {
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+}
+
+/* Network status indicator */
+.lg-network-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff4444;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.lg-network-status.connected {
+    background: #44ff44;
+    box-shadow: 0 0 10px rgba(68, 255, 68, 0.5);
+}
+
+.lg-network-status.slow {
+    background: #ffff44;
+}
+
+/* Error screen específico para LG */
+.lg-error-screen {
+    background: linear-gradient(135deg, #2d1b69 0%, #11041a 100%);
+}
+
+.lg-error-screen .error-title {
+    color: #ff6b6b;
+    text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+}
+
+/* Debug overlay para LG */
+.lg-debug-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 99999;
+    overflow-y: auto;
+    display: none;
+}
+
+.lg-debug-overlay.active {
+    display: block;
+}
+
+.lg-debug-overlay h3 {
+    color: #00ffff;
+    margin: 20px 0 10px 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.lg-debug-overlay .debug-item {
+    margin: 5px 0;
+    padding: 5px;
+    background: rgba(0, 255, 0, 0.1);
+    border-left: 3px solid #00ff00;
+}
+
+.lg-debug-overlay .debug-error {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    border-left-color: #ff4444;
+}
+
+.lg-debug-overlay .debug-warning {
+    color: #ffff44;
+    background: rgba(255, 255, 68, 0.1);
+    border-left-color: #ffff44;
+}
+
+/* Magic Remote pointer simulation */
+.lg-pointer {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, #ffffff 0%, #cccccc 100%);
+    border: 2px solid #000000;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100000;
+    transition: all 0.1s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Gesture feedback */
+.lg-gesture-feedback {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99998;
+    font-size: 24px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lg-gesture-feedback.show {
+    opacity: 1;
+    animation: gestureFloat 1s ease-out forwards;
+}
+
+@keyframes gestureFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-30px) scale(1.2);
+        opacity: 0;
+    }
+}

@@ -61,8 +61,8 @@ type ProfilesContextType = {
 const ProfilesContext = createContext<ProfilesContextType | null>(null);
 
 const DEFAULT_AVATARS = [
-  '🎬', '🎭', '🎪', '🎨', '🎸', '🎮', '🎯', '🎲',
-  '🌟', '⭐', '✨', '💫', '🔥', '⚡', '💎', '🏆'
+  '🦸‍♂️', '🦸‍♀️', '🦹‍♂️', '🦹‍♀️', '🤖', '👽', '🧙‍♂️', '🧙‍♀️',
+  '🧚‍♂️', '🧚‍♀️', '🧛‍♂️', '🧛‍♀️', '🧞‍♂️', '🧞‍♀️', '🧝‍♂️', '🧝‍♀️'
 ];
 
 function loadState(): ProfilesState {

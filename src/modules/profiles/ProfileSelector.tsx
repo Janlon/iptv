@@ -8,14 +8,34 @@ export function ProfileSelector() {
   const [showEditModal, setShowEditModal] = useState<Profile | null>(null);
   const [pin, setPin] = useState('');
   const [newProfileName, setNewProfileName] = useState('');
-  const [newProfileAvatar, setNewProfileAvatar] = useState('🎬');
+  const [newProfileAvatar, setNewProfileAvatar] = useState('🦸‍♂️');
   const [newProfilePin, setNewProfilePin] = useState('');
   const [error, setError] = useState('');
 
   const AVATARS = [
-    '🎬', '🎭', '🎪', '🎨', '🎸', '🎮', '🎯', '🎲',
-    '🌟', '⭐', '✨', '💫', '🔥', '⚡', '💎', '🏆'
+    // Heróis Clássicos
+    '🦸‍♂️', '🦸‍♀️', '🕷️', '🦇', '⚡', '🛡️', '🔥', '❄️',
+    // Vilões
+    '🦹‍♂️', '🦹‍♀️', '💀', '🐍', '🔮', '⚔️', '💥', '🌪️',
+    // Fantasia & Ficção
+    '🧙‍♂️', '🧙‍♀️', '🧚‍♂️', '🧚‍♀️', '🧝‍♂️', '🧝‍♀️', '🧛‍♂️', '🧛‍♀️',
+    // Sci-Fi
+    '🤖', '👽', '🛸', '🌌', '🧞‍♂️', '🧞‍♀️', '⭐', '🚀'
   ];
+
+  const getAvatarTitle = (emoji: string) => {
+    const titles: Record<string, string> = {
+      '🦸‍♂️': 'Super-herói', '🦸‍♀️': 'Super-heroína', '🕷️': 'Aranha', '🦇': 'Morcego',
+      '⚡': 'Raio', '🛡️': 'Escudo', '🔥': 'Fogo', '❄️': 'Gelo',
+      '🦹‍♂️': 'Vilão', '🦹‍♀️': 'Vilã', '💀': 'Caveira', '🐍': 'Serpente',
+      '🔮': 'Cristal', '⚔️': 'Espada', '💥': 'Explosão', '🌪️': 'Tornado',
+      '🧙‍♂️': 'Mago', '🧙‍♀️': 'Maga', '🧚‍♂️': 'Fada', '🧚‍♀️': 'Fada',
+      '🧝‍♂️': 'Elfo', '🧝‍♀️': 'Elfa', '🧛‍♂️': 'Vampiro', '🧛‍♀️': 'Vampira',
+      '🤖': 'Robô', '👽': 'Alienígena', '🛸': 'OVNI', '🌌': 'Galáxia',
+      '🧞‍♂️': 'Gênio', '🧞‍♀️': 'Gênia', '⭐': 'Estrela', '🚀': 'Foguete'
+    };
+    return titles[emoji] || emoji;
+  };
 
   function handleProfileClick(profile: Profile) {
     if (profile.pin) {
@@ -52,7 +72,7 @@ export function ProfileSelector() {
     createProfile(newProfileName, newProfileAvatar, newProfilePin || undefined);
     setShowCreateModal(false);
     setNewProfileName('');
-    setNewProfileAvatar('🎬');
+    setNewProfileAvatar('🦸‍♂️');
     setNewProfilePin('');
     setError('');
   }
@@ -73,7 +93,7 @@ export function ProfileSelector() {
 
     setShowEditModal(null);
     setNewProfileName('');
-    setNewProfileAvatar('🎬');
+    setNewProfileAvatar('🦸‍♂️');
     setNewProfilePin('');
     setError('');
   }
@@ -207,16 +227,73 @@ export function ProfileSelector() {
             <label>
               Avatar
               <div className="avatar-picker">
-                {AVATARS.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
-                    onClick={() => setNewProfileAvatar(emoji)}
-                  >
-                    {emoji}
-                  </button>
-                ))}
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🦸 Heróis</span>
+                  <div className="avatar-category__items">
+                    {['🦸‍♂️', '🦸‍♀️', '🕷️', '🦇', '⚡', '🛡️', '🔥', '❄️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🦹 Vilões</span>
+                  <div className="avatar-category__items">
+                    {['🦹‍♂️', '🦹‍♀️', '💀', '🐍', '🔮', '⚔️', '💥', '🌪️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🧙 Fantasia</span>
+                  <div className="avatar-category__items">
+                    {['🧙‍♂️', '🧙‍♀️', '🧚‍♂️', '🧚‍♀️', '🧝‍♂️', '🧝‍♀️', '🧛‍♂️', '🧛‍♀️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🚀 Sci-Fi</span>
+                  <div className="avatar-category__items">
+                    {['🤖', '👽', '🛸', '🌌', '🧞‍♂️', '🧞‍♀️', '⭐', '🚀'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </label>
 
@@ -239,7 +316,7 @@ export function ProfileSelector() {
               <button type="button" onClick={() => {
                 setShowCreateModal(false);
                 setNewProfileName('');
-                setNewProfileAvatar('🎬');
+                setNewProfileAvatar('🦸‍♂️');
                 setNewProfilePin('');
                 setError('');
               }}>
@@ -273,16 +350,73 @@ export function ProfileSelector() {
             <label>
               Avatar
               <div className="avatar-picker">
-                {AVATARS.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
-                    onClick={() => setNewProfileAvatar(emoji)}
-                  >
-                    {emoji}
-                  </button>
-                ))}
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🦸 Heróis</span>
+                  <div className="avatar-category__items">
+                    {['🦸‍♂️', '🦸‍♀️', '🕷️', '🦇', '⚡', '🛡️', '🔥', '❄️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🦹 Vilões</span>
+                  <div className="avatar-category__items">
+                    {['🦹‍♂️', '🦹‍♀️', '💀', '🐍', '🔮', '⚔️', '💥', '🌪️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🧙 Fantasia</span>
+                  <div className="avatar-category__items">
+                    {['🧙‍♂️', '🧙‍♀️', '🧚‍♂️', '🧚‍♀️', '🧝‍♂️', '🧝‍♀️', '🧛‍♂️', '🧛‍♀️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="avatar-category">
+                  <span className="avatar-category__title">🚀 Sci-Fi</span>
+                  <div className="avatar-category__items">
+                    {['🤖', '👽', '🛸', '🌌', '🧞‍♂️', '🧞‍♀️', '⭐', '🚀'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={newProfileAvatar === emoji ? 'avatar-picker__item avatar-picker__item--active' : 'avatar-picker__item'}
+                        onClick={() => setNewProfileAvatar(emoji)}
+                        title={getAvatarTitle(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </label>
 
@@ -312,7 +446,7 @@ export function ProfileSelector() {
               <button type="button" onClick={() => {
                 setShowEditModal(null);
                 setNewProfileName('');
-                setNewProfileAvatar('🎬');
+                setNewProfileAvatar('🦸‍♂️');
                 setNewProfilePin('');
                 setError('');
               }}>

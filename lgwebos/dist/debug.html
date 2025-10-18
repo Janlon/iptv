@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GatoFlix Debug - LG webOS</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        .debug-title {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .debug-info {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:focus {
+            outline: 2px solid #00ff00;
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-title">🔧 GatoFlix - Debug LG webOS</div>
+    
+    <div class="debug-section">
+        <div class="debug-title">📱 Informações do Sistema</div>
+        <div id="systemInfo" class="debug-info">Carregando...</div>
+    </div>
+    
+    <div class="debug-section">
+        <div class="debug-title">🎮 Magic Remote</div>
+        <div id="remoteInfo" class="debug-info">Pressione qualquer tecla...</div>
+    </div>
+    
+    <div class="debug-section">
+        <div class="debug-title">🚀 Ações</div>
+        <button onclick="testApp()">Testar App Principal</button>
+        <button onclick="clearStorage()">Limpar Storage</button>
+        <button onclick="reloadApp()">Recarregar</button>
+    </div>
+
+    <script>
+        // Informações do sistema
+        function updateSystemInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Plataforma': navigator.platform,
+                'Largura da Tela': window.innerWidth,
+                'Altura da Tela': window.innerHeight,
+                'webOS API': typeof webOS !== 'undefined' ? 'Disponível' : 'Não disponível'
+            };
+            
+            const element = document.getElementById('systemInfo');
+            element.innerHTML = Object.entries(info)
+                .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
+                .join('');
+        }
+        
+        // Event listener para Magic Remote
+        document.addEventListener('keydown', function(e) {
+            const remoteInfo = document.getElementById('remoteInfo');
+            remoteInfo.innerHTML = `
+                <div><strong>Última Tecla:</strong> ${e.key} (Código: ${e.keyCode})</div>
+                <div><strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}</div>
+            `;
+        });
+        
+        function testApp() {
+            window.location.href = 'index.html';
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('Storage limpo');
+        }
+        
+        function reloadApp() {
+            location.reload();
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemInfo();
+        });
+    </script>
+</body>
+</html>

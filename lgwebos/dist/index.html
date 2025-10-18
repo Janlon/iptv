@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GatoFlix - LG webOS</title>
+    <script src="webOSTV.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            font-family: 'LG Smart UI', 'Segoe UI', Arial, sans-serif;
+            color: white;
+        }
+        
+        #root {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Loading screen for LG webOS */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+        }
+        
+        .loading-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .loading-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #ffffff40;
+            border-top: 6px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px 0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc66);
+            border-radius: 2px;
+            animation: progress 3s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        
+        .error-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            z-index: 10000;
+            text-align: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+        
+        .error-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            max-width: 800px;
+        }
+        
+        .retry-btn {
+            background: #ffffff;
+            color: #cc0000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            outline: none;
+        }
+        
+        .retry-btn:focus {
+            outline: 3px solid #ffffff;
+            outline-offset: 2px;
+        }
+        
+        /* LG webOS optimizations */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        button:focus {
+            outline: 3px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        /* LG Magic Remote optimizations */
+        .focusable {
+            transition: all 0.2s ease;
+        }
+        
+        .focusable:focus {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-title">📺 GatoFlix LG</div>
+            <div class="loading-message" id="loadingMessage">Inicializando LG webOS App...</div>
+            <div class="loading-spinner"></div>
+            <div class="loading-progress">
+                <div class="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Screen -->
+    <div class="error-screen" id="errorScreen">
+        <div class="error-title">⚠️ Erro de Carregamento</div>
+        <div class="error-message" id="errorMessage">
+            Falha ao carregar o aplicativo. Verifique a conexão e tente novamente.
+        </div>
+        <button class="retry-btn focusable" onclick="retryLoad()">🔄 Tentar Novamente</button>
+        <button class="retry-btn focusable" onclick="openDebug()">🔧 Modo Debug</button>
+    </div>
+
+    <script>
+        console.log('🚀 GatoFlix - LG webOS inicializando...');
+        
+        let loadTimeout;
+        let progressInterval;
+        
+        // Função para atualizar mensagem de loading
+        function updateLoadingMessage(message) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.textContent = message;
+            }
+            console.log('Loading:', message);
+        }
+        
+        // Função para mostrar erro
+        function showError(message, error = null) {
+            console.error('❌ Erro:', message, error);
+            
+            const loadingScreen = document.getElementById('loadingScreen');
+            const errorScreen = document.getElementById('errorScreen');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (loadingScreen) loadingScreen.style.display = 'none';
+            if (errorScreen) errorScreen.style.display = 'flex';
+            if (errorMessage) errorMessage.textContent = message;
+            
+            clearTimeout(loadTimeout);
+            clearInterval(progressInterval);
+        }
+        
+        // Função para tentar novamente
+        window.retryLoad = function() {
+            console.log('🔄 Tentando carregar novamente...');
+            location.reload();
+        };
+        
+        // Função para abrir debug
+        window.openDebug = function() {
+            console.log('🔧 Abrindo modo debug...');
+            location.href = 'debug.html';
+        };
+        
+        // Função para inicializar o app
+        function initializeLGApp() {
+            updateLoadingMessage('Detectando LG webOS...');
+            
+            // Detectar LG webOS
+            if (typeof webOS !== 'undefined') {
+                console.log('✅ LG webOS detectada');
+                updateLoadingMessage('LG webOS detectada ✓');
+                
+                // Inicializar webOS APIs
+                try {
+                    webOS.deviceInfo(function(info) {
+                        console.log('📱 LG TV Info:', info);
+                        updateLoadingMessage(`LG ${info.modelName} detectada ✓`);
+                    });
+                } catch (error) {
+                    console.log('⚠️ Erro ao obter info do device:', error);
+                }
+            } else {
+                console.log('⚠️ LG webOS APIs não encontradas (pode funcionar assim mesmo)');
+                updateLoadingMessage('Modo compatibilidade ativado');
+            }
+            
+            // Carregar React
+            setTimeout(() => {
+                loadReactApp();
+            }, 500);
+        }
+        
+        function loadReactApp() {
+            updateLoadingMessage('Carregando aplicação React...');
+            
+            try {
+                // Preparar elemento root para React
+                const root = document.getElementById('root');
+                if (root) {
+                    console.log('🔧 Preparando elemento root para React...');
+                }
+                
+                // Criar script para carregar React
+                const script = document.createElement('script');
+                script.src = 'assets/index-hTq8XkWN.js';
+                script.type = 'text/javascript';
+                
+                script.onload = function() {
+                    console.log('✅ Script React carregado');
+                    updateLoadingMessage('Inicializando React...');
+                    
+                    // Aguardar e verificar múltiplas vezes
+                    let attempts = 0;
+                    const maxAttempts = 15;
+                    
+                    const checkInterval = setInterval(() => {
+                        attempts++;
+                        console.log(`🔍 Tentativa ${attempts}: Verificando renderização...`);
+                        
+                        // Verificar se React renderizou conteúdo real
+                        const hasReactContent = root && (
+                            // Verificar se tem componentes React
+                            root.querySelector('[data-reactroot]') ||
+                            root.querySelector('.profile-selector') ||
+                            root.querySelector('.dashboard') ||
+                            root.querySelector('.login-screen') ||
+                            // Ou se o conteúdo mudou significativamente
+                            (root.children.length > 1 && 
+                             root.innerHTML.includes('class=') && 
+                             !root.innerHTML.includes('loading-screen'))
+                        );
+                        
+                        if (hasReactContent) {
+                            console.log('✅ React renderizou com sucesso!');
+                            updateLoadingMessage('Aplicação carregada ✓');
+                            
+                            clearInterval(checkInterval);
+                            clearTimeout(loadTimeout);
+                            
+                            // Fade out da tela de loading
+                            setTimeout(() => {
+                                const loadingScreen = document.getElementById('loadingScreen');
+                                if (loadingScreen) {
+                                    loadingScreen.style.transition = 'opacity 0.5s ease-out';
+                                    loadingScreen.style.opacity = '0';
+                                    setTimeout(() => {
+                                        loadingScreen.style.display = 'none';
+                                    }, 500);
+                                }
+                            }, 300);
+                            
+                        } else if (attempts >= maxAttempts) {
+                            console.log('❌ React não renderizou após múltiplas tentativas');
+                            console.log('Root content:', root ? root.innerHTML.substring(0, 200) + '...' : 'No root');
+                            clearInterval(checkInterval);
+                            showError('O aplicativo React não conseguiu renderizar após ' + maxAttempts + ' tentativas. Conteúdo do root: ' + (root ? root.children.length + ' elementos' : 'sem root'));
+                        } else {
+                            updateLoadingMessage(`Aguardando React renderizar (${attempts}/${maxAttempts})...`);
+                        }
+                    }, 600);
+                };
+                
+                script.onerror = function(error) {
+                    console.error('❌ Erro ao carregar React script:', error);
+                    showError('Falha ao carregar o script principal (assets/index-DQQCVh5Z.js). Verifique se o arquivo existe e se não há erros de CORS.');
+                };
+                
+                // Adicionar script ao head
+                document.head.appendChild(script);
+                
+                // Timeout de segurança
+                loadTimeout = setTimeout(() => {
+                    showError('Timeout: O aplicativo demorou mais de 20 segundos para carregar. Isso pode indicar um problema de rede ou arquivo corrompido.');
+                }, 20000);
+                
+            } catch (error) {
+                console.error('❌ Erro crítico ao carregar React:', error);
+                showError('Erro crítico ao inicializar: ' + error.message);
+            }
+        }
+        
+        // Navegação por Magic Remote LG
+        function initializeLGRemoteControl() {
+            console.log('🎮 Inicializando Magic Remote LG...');
+            
+            // Key mappings para LG webOS
+            const LG_KEY_MAP = {
+                // Setas direcionais
+                37: 'left',    // ArrowLeft
+                38: 'up',      // ArrowUp  
+                39: 'right',   // ArrowRight
+                40: 'down',    // ArrowDown
+                
+                // Botões principais
+                13: 'enter',   // Enter
+                8: 'back',     // Backspace
+                27: 'back',    // Escape
+                
+                // Botões coloridos LG
+                403: 'red',    // Red
+                404: 'green',  // Green  
+                405: 'yellow', // Yellow
+                406: 'blue',   // Blue
+                
+                // Controles de mídia
+                415: 'play',   // Play
+                19: 'pause',   // Pause
+                413: 'stop',   // Stop
+                412: 'rewind', // Rewind
+                417: 'fastforward', // Fast Forward
+                
+                // Botões específicos LG
+                461: 'back',   // BACK
+                457: 'info',   // INFO
+                
+                // Magic Remote gestos (simulados com botões)
+                33: 'pageup',   // Page Up
+                34: 'pagedown', // Page Down
+                35: 'end',      // End
+                36: 'home'      // Home
+            };
+            
+            return LG_KEY_MAP;
+        }
+        
+        // Inicializar controle remoto
+        const lgKeyMap = initializeLGRemoteControl();
+        
+        // Event listener principal para controles LG
+        document.addEventListener('keydown', function(e) {
+            console.log('🎮 LG Tecla pressionada:', {
+                keyCode: e.keyCode,
+                key: e.key,
+                which: e.which,
+                code: e.code
+            });
+            
+            const mappedKey = lgKeyMap[e.keyCode] || lgKeyMap[e.which];
+            
+            if (mappedKey) {
+                console.log(`🎯 LG Tecla mapeada: ${mappedKey}`);
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Ações específicas para loading/error screens
+                if (mappedKey === 'enter') {
+                    const focused = document.activeElement;
+                    if (focused && focused.click) {
+                        console.log('👆 Clicando no elemento focado');
+                        focused.click();
+                    }
+                } else if (mappedKey === 'back') {
+                    console.log('🔙 Botão Back pressionado');
+                    openDebug();
+                } else if (mappedKey === 'red') {
+                    console.log('🔴 Botão Vermelho - Tentar novamente');
+                    retryLoad();
+                } else if (mappedKey === 'green') {
+                    console.log('🟢 Botão Verde - Debug');
+                    openDebug();
+                }
+            } else {
+                console.log('⚠️ LG Tecla não mapeada:', e.keyCode);
+            }
+        });
+        
+        // Garantir foco na página
+        function ensureFocus() {
+            if (document.activeElement === document.body) {
+                const firstButton = document.querySelector('button.focusable');
+                if (firstButton) {
+                    firstButton.focus();
+                    console.log('🎯 Foco definido no primeiro botão');
+                }
+            }
+        }
+        
+        // Capturar erros globais
+        window.addEventListener('error', function(event) {
+            console.error('🚨 Erro JavaScript:', event.error);
+            showError('Erro JavaScript: ' + (event.error ? event.error.message : 'Erro desconhecido'));
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('🚨 Promise rejeitada:', event.reason);
+            showError('Promise rejeitada: ' + event.reason);
+        });
+        
+        // Inicializar quando DOM estiver pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeLGApp();
+                setTimeout(ensureFocus, 1000);
+            });
+        } else {
+            initializeLGApp();
+            setTimeout(ensureFocus, 1000);
+        }
+        
+    </script>
+</body>
+</html>

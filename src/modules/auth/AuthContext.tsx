@@ -21,7 +21,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const STORAGE_KEY = 'iptv-lg-webos.credentials';
+const STORAGE_KEY = 'gatoflix.credentials';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ status: 'idle' });

@@ -8,6 +8,14 @@ export default defineConfig({
     port: 5173
   },
   build: {
-    target: 'esnext'
+    target: 'es2015', // ES2015 é compatível com Tizen TV
+    outDir: 'dist',
+    rollupOptions: {
+      output: {
+        format: 'iife', // IIFE em vez de ES modules para compatibilidade
+        manualChunks: undefined,
+      }
+    },
+    minify: false // Desabilitar minificação para debug
   }
 });

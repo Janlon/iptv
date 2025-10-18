@@ -1,0 +1,32 @@
+{
+  "id": "com.gatoflix.player",
+  "version": "1.0.0",
+  "vendor": "GatoFlix",
+  "type": "web",
+  "main": "index.html",
+  "title": "GatoFlix",
+  "icon": "icon.png",
+  "iconColor": "#4a90e2",
+  "requestedWindowOrientation": "landscape",
+  "disableBackHistoryAPI": true,
+  "supportQuickStart": true,
+  "handlesRelaunch": true,
+  "transparent": false,
+  "v2": true,
+  "spinnerOnLaunch": true,
+  "resolution": "1920x1080",
+  "requiredPermissions": [
+    "time.query",
+    "power",
+    "activities.read",
+    "activities.write",
+    "activities.operation"
+  ],
+  "privileges": [
+    "network",
+    "tv",
+    "audio",
+    "time"
+  ],
+  "uiRevision": 2
+}
